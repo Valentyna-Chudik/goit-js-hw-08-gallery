@@ -1,6 +1,15 @@
 import galleryItems from './gallery-items.js';
 
 const galleryContainerRef = document.querySelector('.js-gallery');
+const modalRef = document.querySelector('.js-lightbox');
+const modalOverlayRef = document.querySelector('.lightbox__overlay');
+const modalContentRef = document.querySelector('.lightbox__content');
+const modalImage = document.querySelector('.lightbox__image');
+const closeBtn = document.querySelector('.lightbox__button');
+
+galleryContainerRef.addEventListener('click', onOpenModal);
+modalOverlayRef.addEventListener('click', onOverlayModal);
+closeBtn.addEventListener('click', onCloseModal);
 
 // 1st METHOD (createElement)
 
@@ -36,3 +45,44 @@ const makeGalleryMarkup = galleryItem => {
 
 const galleryMarkup = galleryItems.map(makeGalleryMarkup).join('');
 galleryContainerRef.insertAdjacentHTML('beforeend', galleryMarkup);
+
+// function onOpenModal(evt) {
+//   evt.preventDefault();
+//   if (evt.target.nodeName !== IMG) {
+//     return;
+//   }
+//   modalRef.classList.add('is-open');
+//   modalImage.src = evt.target.dataset.source;
+//   modalImage.alt = evt.target.alt;
+//   window.addEventListener('keydown', onEscKeyPress);
+// }
+
+function onOpenModal(evt) {
+  evt.preventDefault();
+  if (evt.target.nodeName !== 'IMG') {
+    return;
+  }
+  modalRef.classList.add('is-open');
+  modalImage.src = evt.target.dataset.source;
+  modalImage.alt = evt.target.alt;
+
+  document.addEventListener('keydown', onEscKeyPress);
+}
+
+function onOverlayModal(evt) {
+  if (evt.currentTarget === evt.target) {
+    onCloseModal();
+  }
+}
+
+function onCloseModal(evt) {
+  window.removeEventListener('keydown', onEscKeyPress);
+  document.body.classList.remove('is-open');
+  modalImage.src = '';
+}
+
+function onEscKeyPress(evt) {
+  if (evt.code === 'Escape') {
+    onCloseModal();
+  }
+}
